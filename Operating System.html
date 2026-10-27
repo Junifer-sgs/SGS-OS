@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SGS OS</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark;--bg:#000;--line:#666;--mut:#9a9a9a;--mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,"Courier New",monospace}
+body{margin:0;min-height:100vh;background:#000;color:#fff;font:14px/1.5 var(--mono)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+::selection{background:#fff;color:#000}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#bg{position:fixed;inset:0;z-index:0}
+.stage{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:40px 16px 100px;text-align:left}
+.ps{margin:0 0 6px;color:var(--mut)}
+h1{font:700 clamp(44px,10vw,80px)/1 var(--mono);letter-spacing:-.03em;margin:0 0 8px}
+.cur{display:inline-block;width:.5em;height:.85em;background:#fff;margin-left:.12em;vertical-align:-.02em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.sub{color:var(--mut);margin:0 0 26px}
+.panel{border:1px solid #fff;margin:0 0 18px;counter-reset:n;background:rgba(0,0,0,.8)}
+.panel::before{content:attr(data-t);display:block;padding:3px 12px;background:#fff;color:#000;font-weight:700}
+.term{border:1px solid #fff;padding:10px 12px;margin:0 0 18px;background:rgba(0,0,0,.8)}
+.term:focus-within{outline:2px solid #fff;outline-offset:2px}
+#log{max-height:170px;overflow:auto;white-space:pre-wrap;color:#cfcfcf;margin-bottom:6px}
+.cmd{display:flex;gap:8px;align-items:center}
+.cmd span{white-space:nowrap}
+.cmd input{flex:1;min-width:0;border:0;padding:4px 0;background:transparent}
+.cmd input:focus-visible{outline:none}
+button,input,select,textarea{font:inherit;color:#fff;background:#000;border:1px solid var(--line);border-radius:0;padding:6px 10px}
+button{cursor:pointer}
+button:hover,.act{background:#fff;color:#000;border-color:#fff}
+input[type=color]{padding:0;width:44px;height:32px}
+.tile{display:flex;align-items:center;gap:10px;width:100%;padding:7px 12px;background:transparent;color:#fff;border:0;border-top:1px solid #333;text-align:left;text-decoration:none}
+.tile::before{counter-increment:n;content:"[" counter(n) "]";color:var(--mut)}
+a.tile::after{content:"↗";margin-left:auto}
+.tile i{display:none}
+.tile:hover{background:#fff;color:#000}
+.tile:hover::before{color:#000}
+aside{position:fixed;top:18px;right:18px;width:252px;z-index:2;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 130px);overflow:auto;scrollbar-width:thin}
+.card{background:rgba(0,0,0,.92);border:1px solid var(--line);padding:10px 12px;text-align:left}
+.card h3{margin:0 0 8px;font-size:13px}
+.card h3::before{content:"# ";color:var(--mut)}
+.time{font:700 26px var(--mono)}
+.mut{color:var(--mut)}
+a{color:#fff}
+.bar{height:6px;background:#333;margin:6px 0 8px}
+.bar i{display:block;height:100%;width:100%;background:#fff}
+.pill{position:fixed;z-index:3;right:18px;bottom:16px;padding:6px 12px;background:#000;border:1px solid var(--line)}
+#fps{position:fixed;left:18px;bottom:16px;z-index:3;color:var(--mut)}
+@media(max-width:1180px){aside{position:relative;z-index:1;width:auto;max-width:640px;margin:0 auto;padding:0 16px 110px;flex-direction:row;flex-wrap:wrap;max-height:none;overflow:visible}.card{flex:1 1 220px}}
+textarea{width:100%;min-height:130px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+#pad{width:100%;touch-action:none;border:1px solid var(--line);display:block}
+iframe{width:100%;height:240px;border:1px solid var(--line);background:#fff;margin-top:10px}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.keys.five{grid-template-columns:repeat(5,1fr);margin-bottom:6px}
+.keys button{padding:12px 0;font-size:16px}
+.out{background:#000;border:1px solid var(--line);padding:10px;margin-top:10px;white-space:pre-wrap;min-height:40px}
+.note{border:1px solid var(--line);padding:8px 10px;margin-top:8px}
+.note p{margin:0 0 6px;white-space:pre-wrap}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#tb{position:fixed;left:96px;bottom:14px;z-index:50;display:flex;gap:6px;max-width:max(120px,calc(100vw - 420px));overflow-x:auto}
+.win{position:fixed;z-index:30;width:min(560px,94vw);max-height:80vh;overflow:auto;background:#000;border:1px solid #fff;text-align:left}
+.win header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 12px;background:#fff;color:#000;position:sticky;top:0;z-index:1;cursor:move;touch-action:none;user-select:none}
+.win header div{display:flex;gap:6px}
+.wb{padding:16px}
+input[type=checkbox]{width:16px;height:16px;padding:0;accent-color:#fff}
+html.lt{filter:invert(1)}
+html.lt iframe,html.lt #pad{filter:invert(1)}
+</style>
+</head>
+<body>
+<div id="app-root">
+<canvas id="bg"></canvas>
+<main class="stage">
+  <p class="ps">sgs@os:~$ ./boot</p>
+  <h1>SGS OS<span class="cur" aria-hidden="true"></span></h1>
+  <p class="sub">Sacred Games Society Operating System</p>
+  <nav class="panel" id="links" data-t="~/links" aria-label="Community links"></nav>
+  <nav class="panel" id="tools" data-t="~/tools" aria-label="Tools"></nav>
+  <section class="term" aria-label="Command line"><div id="log" role="log"></div><label class="cmd"><span>sgs@os:~$</span><input id="cmd" autocomplete="off" spellcheck="false" placeholder="type help" aria-label="Command"></label></section>
+</main>
+<aside>
+  <section class="card"><h3>Clock</h3><div class="time" id="ct1"></div><div id="cd1"></div><div class="mut" id="tz"></div></section>
+  <section class="card"><h3>Weather</h3>
+    <label class="mut" for="city">Your city</label>
+    <div class="row" style="margin:6px 0"><input id="city" placeholder="e.g. Orlando" style="flex:1;min-width:0"><button id="wb">Check</button></div>
+    <div id="wo" class="mut">Enter a city to see the current weather.</div>
+    <a id="wl" href="https://www.google.com/search?q=weather" target="_blank" rel="noopener">View live weather ↗</a>
+  </section>
+  <section class="card"><h3>Browser telemetry</h3>
+    <div>Frame rate: <b id="fr">60</b> FPS</div><div class="bar"><i id="fb"></i></div>
+    <div>JS memory: <span id="mem">–</span></div>
+    <div>Logical processors: <span id="cpu"></span></div>
+  </section>
+<section class="card"><h3>Latest repos</h3><div id="rp" class="mut">Loading…</div></section>
+</aside>
+<div id="fps">FPS 60</div>
+<div class="pill" id="on" style="bottom:62px" title="People online in the SGS Discord server. Falls back to tabs open on this device if Discord cannot be reached.">Online: 1</div>
+<div class="pill" id="bat">Battery: not available</div>
+<div id="tb" aria-label="Open windows"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),E=(t,h)=>{const e=document.createElement(t);if(h!=null)e.innerHTML=h;return e};
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const ONLINE_URL=''; // optional: your own endpoint that returns {"online": number}
+
+/* ---------- audio helpers ---------- */
+const beep=()=>{try{const A=new AudioContext(),o=A.createOscillator();o.connect(A.destination);o.frequency.value=880;o.start();o.stop(A.currentTime+.8)}catch{}document.title="Time is up - SGS OS"};
+const play=m=>{const A=new (window.AudioContext||window.webkitAudioContext)(),u=.08;let t=A.currentTime+.05;
+ for(const ch of m){if(ch=='.'||ch=='-'){const o=A.createOscillator(),g=A.createGain(),d=ch=='.'?u:3*u;o.frequency.value=600;g.gain.value=.2;o.connect(g);g.connect(A.destination);o.start(t);o.stop(t+d);t+=d+u}else if(ch==' ')t+=2*u;else if(ch=='/')t+=4*u}
+ setTimeout(()=>A.close(),(t-A.currentTime+.3)*1000)};
+
+/* ---------- calculators ---------- */
+const ev=(s,deg)=>{if(!s)return'';try{
+ if(s.replace(/sin\(|cos\(|tan\(|ln\(|log\(|√\(|[0-9.+\-×÷−^()πe\s*\/]/g,''))return'Error';
+ const k=deg?Math.PI/180:1,js=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\^/g,'**').replace(/π/g,'PI').replace(/√/g,'sqrt');
+ const r=Function('"use strict";const PI=Math.PI,e=Math.E,sin=x=>Math.sin(x*'+k+'),cos=x=>Math.cos(x*'+k+'),tan=x=>Math.tan(x*'+k+'),ln=Math.log,log=Math.log10,sqrt=Math.sqrt;return('+js+')')();
+ return Number.isFinite(r)?String(+r.toPrecision(12)):'Error'}catch{return'Error'}};
+function keypad(b,sci){let ex='',deg=1;
+ b.innerHTML='<input id="cd" readonly style="width:100%;font-size:22px;text-align:right;margin-bottom:8px" aria-label="Display">'+(sci?'<div class="keys five" id="ke"></div>':'')+'<div class="keys" id="ck"></div>';
+ const d=$('#cd'),base=['C','⌫','(',')','7','8','9','÷','4','5','6','×','1','2','3','−','0','.','=','+'],extra=['sin(','cos(','tan(','ln(','log(','√(','^','π','e','DEG'];
+ const add=(host,k)=>{const bt=E('button');bt.textContent=k;bt.onclick=()=>{
+  if(k=='C')ex='';
+  else if(k=='⌫')ex=ex.replace(/(sin\(|cos\(|tan\(|ln\(|log\(|√\(|.)$/,'');
+  else if(k=='='){const r=ev(ex,deg);d.value=r;ex=r=='Error'?'':r;return}
+  else if(k=='DEG'){deg=!deg;bt.textContent=deg?'DEG':'RAD';return}
+  else ex+=k;
+  d.value=ex};host.append(bt)};
+ if(sci)extra.forEach(k=>add($('#ke'),k));base.forEach(k=>add($('#ck'),k))}
+const nf=v=>Number.isFinite(v)?String(+v.toFixed(4)):'n/a',money=v=>Number.isFinite(v)?v.toFixed(2):'n/a';
+const F=(b,fields,fn)=>{b.innerHTML='<div class="row" id="ff"></div><div class="out" id="fo"></div>';
+ const ins=fields.map(([l,v])=>{const w=E('label');w.style.cssText='display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mut)';w.append(l);const i=E('input');i.type='number';i.step='any';i.value=v;i.style.width='130px';w.append(i);$('#ff').append(w);return i});
+ const up=()=>{$('#fo').textContent=fn(ins.map(i=>+i.value))};ins.forEach(i=>i.oninput=up);up()};
+const CALC={
+ basic:b=>keypad(b,0),
+ scientific:b=>keypad(b,1),
+ percent:b=>F(b,[['X',15],['Y',200]],([x,y])=>x+'% of '+y+' = '+nf(x*y/100)+'\n'+x+' is '+nf(x/y*100)+'% of '+y+'\nChange from '+x+' to '+y+': '+nf((y-x)/x*100)+'%'),
+ tip:b=>F(b,[['Bill',50],['Tip %',18],['People',2]],([a,t,p])=>{const tip=a*t/100;return'Tip: '+money(tip)+'\nTotal: '+money(a+tip)+'\nPer person: '+money((a+tip)/p)}),
+ loan:b=>F(b,[['Loan amount',20000],['APR %',6.5],['Years',5]],([a,p,y])=>{const r=p/1200,m=y*12,pay=r?a*r/(1-(1+r)**-m):a/m;return'Monthly payment: '+money(pay)+'\nTotal paid: '+money(pay*m)+'\nTotal interest: '+money(pay*m-a)}),
+ bmi:b=>F(b,[['Weight (kg)',70],['Height (cm)',175]],([w,h])=>{const v=w/((h/100)**2);return'BMI: '+nf(v)+'\n'+(v<18.5?'Underweight range':v<25?'Healthy range':v<30?'Overweight range':'Obese range')}),
+ units(b){const U={Length:{m:1,km:1000,cm:.01,mi:1609.344,ft:.3048,in:.0254},Weight:{kg:1,g:.001,lb:.45359237,oz:.028349523},Temperature:{C:1,F:1,K:1}};
+  b.innerHTML='<div class="row"><select id="uc"></select><input id="uv" type="number" value="1" step="any" style="width:110px"><select id="uf"></select><span>to</span><select id="ut"></select></div><div class="out" id="uo"></div>';
+  const up=()=>{const c=$('#uc').value,v=+$('#uv').value,f=$('#uf').value,t=$('#ut').value;let r;
+   if(c=='Temperature'){const k=f=='C'?v:f=='F'?(v-32)*5/9:v-273.15;r=t=='C'?k:t=='F'?k*9/5+32:k+273.15}else r=v*U[c][f]/U[c][t];
+   $('#uo').textContent=v+' '+f+' = '+(+r.toPrecision(8))+' '+t};
+  const fill=()=>{$('#uf').innerHTML=$('#ut').innerHTML=Object.keys(U[$('#uc').value]).map(x=>'<option>'+x+'</option>').join('');$('#ut').selectedIndex=1;up()};
+  $('#uc').innerHTML=Object.keys(U).map(x=>'<option>'+x+'</option>').join('');
+  $('#uc').onchange=fill;$('#uv').oninput=up;$('#uf').onchange=$('#ut').onchange=up;fill()}
+};
+
+/* ---------- tools ---------- */
+const S={h:'<h1>Hello from SGS OS</h1>',c:'h1{font-family:sans-serif;color:teal}',j:'',cur:'h'};
+const T={left:1500,end:0,run:0,iv:0};
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const tshow=()=>{const d=$('#td');if(d)d.textContent=fmt(T.left)};
+function tick(){T.left=Math.max(0,Math.round((T.end-Date.now())/1000));tshow();if(T.left<=0){clearInterval(T.iv);T.run=0;beep();const g=$('#tg');if(g)g.textContent='Start'}}
+const MC={};'A.- B-... C-.-. D-.. E. F..-. G--. H.... I.. J.--- K-.- L.-.. M-- N-. O--- P.--. Q--.- R.-. S... T- U..- V...- W.-- X-..- Y-.-- Z--.. 0----- 1.---- 2..--- 3...-- 4....- 5..... 6-.... 7--... 8---.. 9----.'.split(' ').forEach(s=>MC[s[0]]=s.slice(1));
+const REV=Object.fromEntries(Object.entries(MC).map(([k,v])=>[v,k]));
+const tools={
+ html(b){b.innerHTML='<div class="row"><input type="file" id="hf" accept=".html,.htm,.txt"><button id="hp">Preview</button><button id="ht">Open in new tab</button><button id="hb">Open in about:blank</button></div><div class="row"><button data-k="h">HTML</button><button data-k="c">CSS</button><button data-k="j">JavaScript</button></div><textarea id="ed" spellcheck="false" style="min-height:200px"></textarea><iframe id="pv" sandbox="allow-scripts allow-forms allow-modals allow-popups" title="Preview"></iframe>';
+  const ed=$('#ed'),mark=()=>b.querySelectorAll('[data-k]').forEach(x=>x.classList.toggle('act',x.dataset.k==S.cur)),
+  doc=()=>{S[S.cur]=ed.value;return S.h+(S.c?'<style>'+S.c+'</style>':'')+(S.j?'<script>'+S.j+'<\/script>':'')};
+  ed.value=S[S.cur];mark();
+  b.querySelectorAll('[data-k]').forEach(x=>x.onclick=()=>{S[S.cur]=ed.value;S.cur=x.dataset.k;ed.value=S[S.cur];mark()});
+  $('#hf').onchange=async e=>{const f=e.target.files[0];if(!f)return;S.h=await f.text();S.c=S.j='';S.cur='h';ed.value=S.h;mark()};
+  $('#hp').onclick=()=>{$('#pv').srcdoc=doc()};
+  $('#ht').onclick=()=>open(URL.createObjectURL(new Blob([doc()],{type:'text/html'})));
+  $('#hb').onclick=()=>{const w=open('about:blank');if(!w){alert('Pop-up blocked. Allow pop-ups for this page and try again.');return}w.document.write(doc());w.document.close()}},
+ draw(b){b.innerHTML='<div class="row"><input type="color" id="pc" value="#ffffff" aria-label="Color"><input type="range" id="ps" min="1" max="40" value="4" aria-label="Brush size"><button id="pe">Eraser</button><button id="pcl">Clear</button><button id="psv">Save PNG</button></div><canvas id="pad" width="720" height="420"></canvas>';
+  const c=$('#pad'),x=c.getContext('2d'),bg='#000000';let d=0,er=0,last;
+  const fillBg=()=>{x.fillStyle=bg;x.fillRect(0,0,720,420)};fillBg();x.lineCap=x.lineJoin='round';
+  const p=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+  const ln=(a,z)=>{x.strokeStyle=er?bg:$('#pc').value;x.lineWidth=$('#ps').value;x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(z[0]+.01,z[1]);x.stroke()};
+  c.onpointerdown=e=>{d=1;c.setPointerCapture(e.pointerId);last=p(e);ln(last,last)};
+  c.onpointermove=e=>{if(!d)return;const n=p(e);ln(last,n);last=n};
+  c.onpointerup=c.onpointercancel=()=>{d=0};
+  $('#pe').onclick=e=>{er=!er;e.target.classList.toggle('act',!!er)};
+  $('#pcl').onclick=fillBg;
+  $('#psv').onclick=()=>{const a=E('a');a.href=c.toDataURL();a.download='sgs-drawing.png';a.click()}},
+ morse(b){b.innerHTML='<textarea id="mi" placeholder="Type text, or paste Morse (dots, dashes, spaces; / between words)"></textarea><div class="row" style="margin-top:8px"><button id="me">Text to Morse</button><button id="md">Morse to text</button><button id="mp">Play</button><button id="mc">Copy</button></div><div class="out" id="mo"></div>';
+  const out=v=>{$('#mo').textContent=v};
+  $('#me').onclick=()=>out($('#mi').value.toUpperCase().split(/\s+/).filter(Boolean).map(w=>[...w].map(ch=>MC[ch]).filter(Boolean).join(' ')).join(' / '));
+  $('#md').onclick=()=>out($('#mi').value.trim().split(/\s*\/\s*/).map(w=>w.split(/\s+/).map(s=>REV[s]||'').join('')).join(' '));
+  $('#mp').onclick=()=>play($('#mo').textContent);
+  $('#mc').onclick=()=>navigator.clipboard?.writeText($('#mo').textContent)},
+ notes(b){let N=store.get('sgs-notes',[]),ed=null;
+  b.innerHTML='<textarea id="nt" placeholder="Write a note…"></textarea><div class="row" style="margin-top:8px"><button id="ns">Save note</button></div><div id="nl"></div>';
+  const rl=()=>{const l=$('#nl');l.innerHTML=N.length?'':'<p class="mut">No notes yet. Write one and save it.</p>';
+   N.forEach(n=>{const d=E('div'),p=E('p'),r=E('div'),be=E('button','Edit'),bd=E('button','Delete');d.className='note';r.className='row';r.style.margin='0';p.textContent=n.t;
+    be.onclick=()=>{$('#nt').value=n.t;ed=n.id};bd.onclick=()=>{N=N.filter(x=>x.id!=n.id);store.set('sgs-notes',N);rl()};r.append(be,bd);d.append(p,r);l.append(d)})};
+  $('#ns').onclick=()=>{const t=$('#nt').value.trim();if(!t)return;N=ed?N.map(n=>n.id==ed?{...n,t}:n):[{id:Date.now(),t},...N];ed=null;$('#nt').value='';store.set('sgs-notes',N);rl()};rl()},
+ timer(b){b.innerHTML='<div class="time" id="td" style="font-size:56px;text-align:center;margin:10px 0"></div><div class="row" style="justify-content:center"><input id="tm" type="number" min="1" max="180" value="25" style="width:80px" aria-label="Minutes"><button id="tg"></button><button id="tr">Reset</button></div><div class="row" style="justify-content:center"><button data-m="15">15 min</button><button data-m="25">25 min</button><button data-m="50">50 min</button></div>';
+  $('#tg').textContent=T.run?'Pause':'Start';tshow();
+  $('#tg').onclick=e=>{if(T.run){T.left=Math.round((T.end-Date.now())/1000);clearInterval(T.iv);T.run=0;e.target.textContent='Start';tshow();return}
+   if(T.left<=0)T.left=($('#tm').value||25)*60;T.end=Date.now()+T.left*1000;T.run=1;T.iv=setInterval(tick,250);e.target.textContent='Pause'};
+  $('#tr').onclick=()=>{clearInterval(T.iv);T.run=0;T.left=($('#tm').value||25)*60;tshow();$('#tg').textContent='Start'};
+  b.querySelectorAll('[data-m]').forEach(x=>x.onclick=()=>{$('#tm').value=x.dataset.m;$('#tr').click()})},
+ calc(b){const names=['Basic','Scientific','Percent','Tip','Loan','BMI','Units'];b.innerHTML='<div class="row" id="ctb"></div><div id="cb"></div>';
+  names.forEach(n=>{const t=E('button');t.textContent=n;t.onclick=()=>{[...$('#ctb').children].forEach(x=>x.classList.remove('act'));t.classList.add('act');CALC[n.toLowerCase()]($('#cb'))};$('#ctb').append(t)});$('#ctb').children[0].click()}
+};
+
+const SW={acc:0,t0:0,run:0,iv:0,laps:[]},swt=()=>SW.acc+(SW.run?Date.now()-SW.t0:0),swf=ms=>{const v=ms/1000;return String(Math.floor(v/60)).padStart(2,'0')+':'+(v%60).toFixed(2).padStart(5,'0')};
+Object.assign(tools,{
+ todo(b){let L=store.get('sgs-todos',[]);b.innerHTML='<div class="row"><input id="tdi" placeholder="Add a task" style="flex:1;min-width:0"><button id="tda">Add</button></div><div id="tdl"></div>';
+  const sv=()=>store.set('sgs-todos',L),rl=()=>{const l=$('#tdl');l.innerHTML=L.length?'':'<p class="mut">Nothing to do. Add a task above.</p>';
+   L.forEach(t=>{const r=E('label'),c=E('input'),s=E('span'),x=E('button','[x]');r.className='row';c.type='checkbox';c.checked=t.d;s.textContent=t.t;s.style.cssText='flex:1;'+(t.d?'text-decoration:line-through;color:var(--mut)':'');
+    c.onchange=()=>{t.d=c.checked;sv();rl()};x.onclick=e=>{e.preventDefault();L=L.filter(y=>y!=t);sv();rl()};r.append(c,s,x);l.append(r)})},
+  add=()=>{const v=$('#tdi').value.trim();if(!v)return;L.push({t:v,d:false});$('#tdi').value='';sv();rl()};
+  $('#tda').onclick=add;$('#tdi').onkeydown=e=>{if(e.key=='Enter')add()};rl()},
+ stopwatch(b){b.innerHTML='<div class="time" id="sd" style="font-size:48px;text-align:center;margin:10px 0"></div><div class="row" style="justify-content:center"><button id="sg"></button><button id="sl">Lap</button><button id="sr">Reset</button></div><div class="out" id="sv"></div>';
+  const up=()=>{const d=$('#sd');if(!d){clearInterval(SW.iv);return}d.textContent=swf(swt());$('#sg').textContent=SW.run?'Stop':'Start';$('#sv').textContent=SW.laps.map((v,i)=>'Lap '+(i+1)+'  '+swf(v)).join('\n')||'No laps yet.'};
+  $('#sg').onclick=()=>{if(SW.run){SW.acc=swt();SW.run=0;clearInterval(SW.iv)}else{SW.t0=Date.now();SW.run=1;SW.iv=setInterval(up,50)}up()};
+  $('#sl').onclick=()=>{if(swt()>0){SW.laps.push(swt());up()}};
+  $('#sr').onclick=()=>{clearInterval(SW.iv);SW.acc=SW.run=0;SW.laps=[];up()};
+  if(SW.run){clearInterval(SW.iv);SW.iv=setInterval(up,50)}up()},
+ dev(b){const enc=new TextEncoder(),hex=u=>[...new Uint8Array(u)].map(x=>x.toString(16).padStart(2,'0')).join(''),hs=a=>async s=>hex(await crypto.subtle.digest(a,enc.encode(s))),
+  A=[['JSON format',s=>JSON.stringify(JSON.parse(s),null,2)],['JSON minify',s=>JSON.stringify(JSON.parse(s))],['Base64 encode',s=>btoa(String.fromCharCode(...enc.encode(s)))],['Base64 decode',s=>new TextDecoder().decode(Uint8Array.from(atob(s.trim()),c=>c.charCodeAt(0)))],['URL encode',encodeURIComponent],['URL decode',decodeURIComponent],['SHA-1',hs('SHA-1')],['SHA-256',hs('SHA-256')],['SHA-512',hs('SHA-512')]];
+  b.innerHTML='<textarea id="di" placeholder="Paste text or JSON here"></textarea><div class="row" id="db" style="margin-top:8px"></div><div class="out" id="do"></div><div class="row" style="margin-top:12px"><label>Password length <input id="pl" type="number" min="8" max="64" value="20" style="width:70px"></label><button id="pg">Generate password</button></div>';
+  A.forEach(([l,f])=>{const x=E('button');x.textContent=l;x.onclick=async()=>{try{$('#do').textContent=await f($('#di').value)}catch(e){$('#do').textContent='Error: '+e.message}};$('#db').append(x)});
+  $('#pg').onclick=()=>{const n=Math.min(64,Math.max(8,+$('#pl').value||20)),cs='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*-_=+';$('#do').textContent=[...crypto.getRandomValues(new Uint32Array(n))].map(v=>cs[v%cs.length]).join('')}},
+ settings(b){b.innerHTML='<div class="row"><button id="st">Toggle light/dark theme</button></div><div class="row"><button id="se">Export backup</button><label>Import backup <input type="file" id="si" accept=".json"></label></div><div class="out" id="so">Backups include notes, to-dos, your city and theme.</div>';
+  const o=t=>{$('#so').textContent=t};
+  $('#st').onclick=()=>setTheme(!document.documentElement.classList.contains('lt'));
+  $('#se').onclick=()=>{const d={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('sgs-'))d[k]=localStorage.getItem(k)}}catch{}
+   const a=E('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:'application/json'}));a.download='sgs-os-backup.json';a.click();o('Exported '+Object.keys(d).length+' items.')};
+  $('#si').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());let n=0;for(const k in d)if(k.startsWith('sgs-')&&typeof d[k]=='string'){localStorage.setItem(k,d[k]);n++}o('Imported '+n+' items. Reloading…');setTimeout(()=>location.reload(),800)}catch{o('That file is not a valid SGS OS backup.')}}}
+});
+
+/* ---------- launcher tiles + windows ---------- */
+const LINKS=[['Discord','☎','https://discord.gg/fpeQHH8mrV'],['Website','◎','https://sites.google.com/view/mymheducationcom/home?authuser=0'],['GitHub','⌥','https://github.com/Junifer-sgs'],['YouTube','▶','https://www.youtube.com/@Junifer-SGS']];
+const TOOLS=[['HTML launcher','‹/›','html'],['Drawing pad','✎','draw'],['Morse code','·–','morse'],['Notes','☰','notes'],['Focus timer','◷','timer'],['Calculator','+','calc'],['To-do','☑','todo'],['Stopwatch','⏱','stopwatch'],['Dev utils','{}','dev'],['Settings','⚙','settings']];
+const mk=(host,list)=>list.forEach(([l,g,k])=>{const isL=k.startsWith('http'),t=E(isL?'a':'button'),i=E('i'),s=E('span');t.className='tile';
+ if(isL){t.href=k;t.target='_blank';t.rel='noopener'}else t.onclick=()=>show(k,l);
+ i.textContent=g;s.textContent=l;t.append(i,s);host.append(t)});
+mk($('#links'),LINKS);mk($('#tools'),TOOLS);
+const W={};let zi=30;
+function tbu(){const t=$('#tb');t.innerHTML='';for(const k in W){const w=W[k],x=E('button');x.textContent=w.getAttribute('aria-label');x.classList.toggle('act',!w.hidden);x.onclick=()=>{w.hidden=!w.hidden;if(!w.hidden)w.style.zIndex=++zi;tbu()};t.append(x)}}
+function show(k,t){let w=W[k];if(w){w.hidden=false;w.style.zIndex=++zi;tbu();return}
+ const n=Object.keys(W).length,h=E('header'),b=E('div'),tt=E('b'),bt=E('div'),mn=E('button','[_]'),cl=E('button','[x]');
+ w=W[k]=E('div');w.className='win';w.setAttribute('role','dialog');w.setAttribute('aria-label',t);w.style.zIndex=++zi;
+ tt.textContent=t;mn.setAttribute('aria-label','Minimize');cl.setAttribute('aria-label','Close');b.className='wb';bt.append(mn,cl);h.append(tt,bt);w.append(h,b);
+ w.style.left=(innerWidth<640?innerWidth*.03:40+n*30)+'px';w.style.top=(50+n*30)+'px';document.body.append(w);
+ mn.onclick=()=>{w.hidden=true;tbu()};cl.onclick=()=>{w.remove();delete W[k];tbu();document.title='SGS OS'};
+ w.onpointerdown=()=>{w.style.zIndex=++zi};
+ h.onpointerdown=e=>{if(e.target.closest('button'))return;const dx=e.clientX-w.offsetLeft,dy=e.clientY-w.offsetTop;h.setPointerCapture(e.pointerId);
+  h.onpointermove=v=>{w.style.left=Math.max(0,v.clientX-dx)+'px';w.style.top=Math.max(0,v.clientY-dy)+'px'};h.onpointerup=()=>{h.onpointermove=null}};
+ tools[k](b);tbu()}
+addEventListener('keydown',e=>{if(e.key=='Escape'){const w=document.activeElement.closest('.win');if(w)w.querySelector('header button:last-child').click()}});
+
+/* ---------- command line ---------- */
+function setTheme(l){document.documentElement.classList.toggle('lt',l);store.set('sgs-theme',l?'light':'dark')}
+if(store.get('sgs-theme','dark')=='light')document.documentElement.classList.add('lt');
+const LK={discord:LINKS[0][2],website:LINKS[1][2],github:LINKS[2][2],youtube:LINKS[3][2]},TL=Object.fromEntries(TOOLS.map(([l,,k])=>[k,l]));
+const NAMES=['help','ls','open','weather','theme','echo','neofetch','date','clear',...Object.keys(TL),...Object.keys(LK)],H=[];let hi=0;
+const logl=t=>{const d=E('div'),L=$('#log');d.textContent=t;L.append(d);L.scrollTop=L.scrollHeight};
+async function run(line){const[c,...a]=line.trim().split(/\s+/);if(!c)return;logl('$ '+line.trim());
+ const cmd=c.toLowerCase(),arg=a.join(' '),tgt=(cmd=='open'?arg:cmd).toLowerCase();
+ if(cmd=='help')logl('ls                  list everything you can open\nopen <name>         open a tool or link (or just type the name)\nweather <city>      current weather\ntheme [light|dark]  switch theme\necho <text>         print text\nneofetch            system info\ndate, clear         show the time, clear this log\nUp/Down = history, Tab = autocomplete');
+ else if(cmd=='ls')logl([...Object.keys(TL),...Object.keys(LK)].join('  '));
+ else if(cmd=='date')logl(new Date().toString());
+ else if(cmd=='clear')$('#log').innerHTML='';
+ else if(cmd=='echo')logl(arg);
+ else if(cmd=='theme'){const l=arg?arg.toLowerCase()=='light':!document.documentElement.classList.contains('lt');setTheme(l);logl('theme: '+(l?'light':'dark'))}
+ else if(cmd=='neofetch')logl('sgs@os\n------\nOS: SGS OS\nLanguage: '+navigator.language+'\nCPU threads: '+(navigator.hardwareConcurrency||'?')+'\nScreen: '+screen.width+'x'+screen.height+'\nTime zone: '+Intl.DateTimeFormat().resolvedOptions().timeZone+'\nWindows open: '+Object.keys(W).length);
+ else if(cmd=='weather'){if(!arg)logl('usage: weather <city>');else{$('#city').value=arg;await wx();logl($('#wo').textContent)}}
+ else if(LK[tgt]){logl('opening '+tgt+'…');open(LK[tgt],'_blank','noopener')}
+ else if(TL[tgt])show(tgt,TL[tgt]);
+ else logl(c+': command not found. Type help.')}
+$('#cmd').onkeydown=e=>{const i=e.target;
+ if(e.key=='Enter'){e.preventDefault();const v=i.value;i.value='';if(v.trim())H.push(v);hi=H.length;run(v)}
+ else if(e.key=='ArrowUp'){e.preventDefault();if(H.length){hi=Math.max(0,hi-1);i.value=H[hi]}}
+ else if(e.key=='ArrowDown'){e.preventDefault();hi=Math.min(H.length,hi+1);i.value=H[hi]||''}
+ else if(e.key=='Tab'&&i.value.trim()){e.preventDefault();const p=i.value.split(' '),l=p.pop().toLowerCase();if(!l)return;const m=NAMES.filter(n=>n.startsWith(l));if(m.length==1){p.push(m[0]);i.value=p.join(' ')+' '}else if(m.length>1)logl(m.join('  '))}};
+logl('SGS OS ready. Type help, or press Tab to autocomplete.');
+
+/* ---------- widgets ---------- */
+const clk=()=>{const d=new Date();$('#ct1').textContent=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});$('#cd1').textContent=d.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'})};
+$('#tz').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone;clk();setInterval(clk,1000);
+$('#cpu').textContent=navigator.hardwareConcurrency||'unknown';
+
+const WC=c=>c==0?'Clear':c<4?'Partly cloudy':c<50?'Fog':c<70?'Rain':c<80?'Snow':c<90?'Showers':'Thunderstorm';
+async function wx(){const q=$('#city').value.trim(),o=$('#wo');if(!q)return;store.set('sgs-city',q);
+ $('#wl').href='https://www.google.com/search?q='+encodeURIComponent('weather '+q);o.textContent='Loading…';
+ try{const g=await(await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&name='+encodeURIComponent(q))).json(),p=g.results&&g.results[0];
+  if(!p){o.textContent='City not found. Try a city name like Orlando.';return}
+  const us=Intl.DateTimeFormat().resolvedOptions().timeZone.startsWith('America/');
+  const w=(await(await fetch('https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,wind_speed_10m&temperature_unit='+(us?'fahrenheit':'celsius')+'&wind_speed_unit='+(us?'mph':'kmh')+'&latitude='+p.latitude+'&longitude='+p.longitude)).json()).current;
+  o.textContent=p.name+': '+Math.round(w.temperature_2m)+(us?'°F':'°C')+', '+WC(w.weather_code)+', wind '+Math.round(w.wind_speed_10m)+(us?' mph':' km/h')
+ }catch{o.textContent='Could not reach the weather service. Check your connection.'}}
+$('#wb').onclick=wx;$('#city').onkeydown=e=>{if(e.key=='Enter')wx()};
+$('#city').value=store.get('sgs-city','');if($('#city').value)wx();
+
+let fc=0,ft=performance.now();
+(function f(n){fc++;if(n-ft>=1000){const v=Math.round(fc*1000/(n-ft));fc=0;ft=n;$('#fps').textContent='FPS '+v;$('#fr').textContent=v;$('#fb').style.width=Math.min(100,v/60*100)+'%';
+ const m=performance.memory;$('#mem').textContent=m?Math.round(m.usedJSHeapSize/1048576)+' MB (approx.)':'not available in this browser'}requestAnimationFrame(f)})(ft);
+
+navigator.getBattery?.().then(b=>{const u=()=>{$('#bat').textContent='Battery: '+Math.round(b.level*100)+'% · '+(b.charging?'Charging':'Not charging')};u();b.onlevelchange=b.onchargingchange=u}).catch(()=>{});
+
+const me=Math.random().toString(36).slice(2),seen={},setOn=n=>{$('#on').textContent='Online: '+n};
+try{const ch=new BroadcastChannel('sgs-os-online');ch.onmessage=e=>{seen[e.data]=Date.now()};
+ setInterval(()=>{ch.postMessage(me);const now=Date.now();for(const k in seen)if(now-seen[k]>7000)delete seen[k];if(!ONLINE_URL&&!DC)setOn(1+Object.keys(seen).length)},3000)}catch{}
+if(ONLINE_URL){const p=async()=>{try{setOn((await(await fetch(ONLINE_URL+'?id='+me)).json()).online)}catch{}};p();setInterval(p,30000)}
+let DC=0;const dcf=async()=>{try{const j=await(await fetch('https://discord.com/api/v9/invites/fpeQHH8mrV?with_counts=true')).json();if(j.approximate_presence_count!=null){DC=1;setOn(j.approximate_presence_count+' in Discord')}}catch{}};if(!ONLINE_URL){dcf();setInterval(dcf,60000)}
+
+/* ---------- latest repos ---------- */
+fetch('https://api.github.com/users/Junifer-sgs/repos?sort=created&direction=desc&per_page=5').then(r=>r.ok?r.json():Promise.reject()).then(a=>{const d=$('#rp');d.textContent=a.length?'':'No public repos yet.';a.forEach(r=>{const l=E('a'),z=E('div');l.href=r.html_url;l.target='_blank';l.rel='noopener';l.textContent=r.name;z.append(l);d.append(z)})}).catch(()=>{$('#rp').textContent='Could not load repos (GitHub rate limit?).'});
+
+/* ---------- background network ---------- */
+(function(){const c=$('#bg'),x=c.getContext('2d'),reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;let w,h,P=[];
+ const rs=()=>{w=c.width=innerWidth;h=c.height=innerHeight;P=Array.from({length:Math.min(70,Math.floor(w*h/22000))},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))};
+ const dr=()=>{x.clearRect(0,0,w,h);for(const p of P){p.x=(p.x+p.vx+w)%w;p.y=(p.y+p.vy+h)%h;x.fillStyle='rgba(255,255,255,.35)';x.fillRect(p.x,p.y,2,2)}
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<150){x.strokeStyle='rgba(255,255,255,'+.12*(1-d/150)+')';x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}}};
+ rs();addEventListener('resize',()=>{rs();dr()});(function a(){dr();if(!reduce)requestAnimationFrame(a)})()})();
+</script>
+</body>
+</html>
