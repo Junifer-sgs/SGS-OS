@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Player</title>
+<style>
+html,body{margin:0;height:100%;background:#000}
+iframe{border:0;width:100%;height:100%;display:block}
+p{color:#fff;font:14px ui-monospace,Consolas,monospace;padding:16px}
+</style>
+</head>
+<body>
+<script>
+// Relay page: hosted on a real https address so YouTube accepts the embed (fixes Error 153 inside about:blank)
+const src = new URLSearchParams(location.search).get('src') || '';
+if (/^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_\-]*(\?[A-Za-z0-9_=&%\-]*)?$/.test(src)) {
+  const f = document.createElement('iframe');
+  f.src = src + (src.includes('?') ? '&' : '?') + 'rel=0';
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  f.referrerPolicy = 'strict-origin-when-cross-origin';
+  f.allowFullscreen = true;
+  document.body.append(f);
+} else {
+  document.body.innerHTML = '<p>No valid player link.</p>';
+}
+</script>
+</body>
+</html>
