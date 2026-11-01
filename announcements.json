@@ -1,6 +1,11 @@
 [
   {
     "date": "2026-11-01",
+    "title": "v1.1.5 - Update Update Update",
+    "text": "The site now tells you when there is a new update and also what the current version."
+  },
+  {
+    "date": "2026-11-01",
     "title": "v1.1.4 - GAMES!",
     "text": "So I am now moving from the games site over to the new SGS OS system and it will now have all of the games instead of it being a blockable Google site. Now there are 2 ways (technically 3) to run the OS:\n1. The SGS OS Loader html file\n2. The launcher in the current Google site.\n3. If your school somehow hasn't blocked Github pages then ig you can run it thru the GH page."
   },
