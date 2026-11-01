@@ -795,6 +795,12 @@ brs();applyTheme();applySet();stRender();restoreWins();feedFill();setInterval(fe
 
 // SGS OS Version Checker
 (async function() {
+  if (document.readyState === "loading") {
+    await new Promise(resolve => {
+      document.addEventListener("DOMContentLoaded", resolve, { once: true });
+    });
+  }
+
   const CURRENT_VERSION = "v1.1.2";
   const VERSION_URL =
     "https://cdn.jsdelivr.net/gh/junifer-sgs/SGS-OS@main/version.json";
@@ -806,28 +812,40 @@ brs();applyTheme();applySet();stRender();restoreWins();feedFill();setInterval(fe
       cache: "no-store"
     });
 
-    if (!response.ok) return;
+    if (!response.ok) {
+      throw new Error("GitHub version check failed: " + response.status);
+    }
 
     const data = await response.json();
-    const latest = data.version.startsWith("v")
-      ? data.version
-      : "v" + data.version;
 
-    ver.textContent = "SGS OS " + CURRENT_VERSION;
+    const latest = String(data.version || "").trim();
+    const latestVersion = latest.startsWith("v") ? latest : "v" + latest;
 
-    if (latest !== CURRENT_VERSION) {
+    if (ver) ver.textContent = "SGS OS " + CURRENT_VERSION;
+
+    if (latestVersion !== CURRENT_VERSION) {
       const banner = document.createElement("div");
-      banner.textContent = "New version available (" + latest + ") · Refresh";
+
+      banner.textContent =
+        "New version available (" + latestVersion + ") · Refresh";
+
       banner.style.cssText =
         "position:fixed;top:12px;left:50%;transform:translateX(-50%);" +
         "background:#222;color:white;padding:12px 18px;border-radius:10px;" +
         "z-index:999999;cursor:pointer;font-family:Arial;";
 
       banner.onclick = () => location.reload();
+
       document.body.appendChild(banner);
     }
+
+    console.log("SGS OS version check:", {
+      installed: CURRENT_VERSION,
+      latest: latestVersion
+    });
+
   } catch (error) {
-    console.log("Couldn't check for updates:", error);
+    console.error("SGS OS update check failed:", error);
   }
 })();
 
