@@ -1,6 +1,6 @@
 {
-  "version": "v1.1.4",
-  "name": "GAMES!",
-  "details": "So I am now moving from the games site over to the new SGS OS system and it will now have all of the games instead of it being a blockable Google site. Now there are 2 ways (technically 3) to run the OS:\n1. The SGS OS Loader html file\n2. The launcher in the current Google site.\n3. If your school somehow hasn't blocked Github pages then ig you can run it thru the GH page.",
-  "updatedAt": "2026-11-01T14:27:49.308Z"
+  "version": "v1.1.5",
+  "name": "Update Update Update",
+  "details": "The site now tells you when there is a new update and also what the current version.",
+  "updatedAt": "2026-11-01T17:22:18.630Z"
 }
