@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<!-- Sacred Games Society file -->
+
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Level 67</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bodrumkat/67@main/style.css">
+  <style>
+    canvas:focus { outline: none; }
+    html, body {
+      padding: 0; margin: 0; overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-touch-callout: none; -webkit-user-select: none;
+      -khtml-user-select: none; -moz-user-select: none;
+      -ms-user-select: none; user-select: none;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      height: 100%; min-height: 100%; height: 100vh; min-height: 100vh;
+      position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+      touch-action: none; width: 100%; -webkit-overflow-scrolling: auto;
+      background: #000;
+    }
+    #unity-container, #loading-cover { overflow: hidden; touch-action: none; }
+    #unity-container { position: fixed; }
+    #loading-cover {
+      position: fixed; inset: 0; z-index: 10; background: #000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #unity-loading-bar { width: min(80vw, 420px); text-align: center; }
+    #unity-logo img { max-width: 100%; max-height: 180px; object-fit: contain; }
+    #unity-progress-bar-empty { width: 100%; height: 8px; margin-top: 18px; background: #333; }
+    #unity-progress-bar-full { width: 0%; height: 100%; background: #fff; transition: width .15s linear; }
+    .spinner { display: none; }
+  </style>
+</head>
+<body class="dark">
+  <div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+  </div>
+
+  <div id="loading-cover">
+    <div id="unity-loading-bar">
+      <div id="unity-logo">
+        <img src="https://cdn.jsdelivr.net/gh/bodrumkat/67@main/Images/logo.gif" alt="Game logo">
+      </div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script>
+    const BUILD_URL = "https://cdn.jsdelivr.net/gh/bodrumkat/67@main/Build";
+    const DATA_FILE = "attNew2026 (49).data.br";
+    const WASM_FILE = "attNew2026 (49).wasm.br";
+    const DATA_PARTS = 8;
+    const WASM_PARTS = 6;
+    const NO_DATA = 'no data';
+
+    var initYSDK = true;
+    var initGame = false;
+    var isVisibility = true;
+    var isPausedGame = false;
+    var nowFullAdOpen = false;
+    var cloudSaves = NO_DATA;
+    var environmentData = NO_DATA;
+    var playerData = NO_DATA;
+    var statsSaves = NO_DATA;
+    var paymentsData = NO_DATA;
+    var allGamesData = NO_DATA;
+    var flasgsData = NO_DATA;
+    var player = null;
+    var payments = null;
+    let ygGameInstance = null;
+
+    // Compatibility stub for the original game's Yandex SDK calls.
+    var ysdk = {
+      environment: { i18n: { lang: 'en', tld: 'com' }, app: { id: '0' }, browser: { lang: 'en' }, payload: '' },
+      deviceInfo: { type: 'desktop', isMobile: () => false, isDesktop: () => true, isTablet: () => false, isTV: () => false },
+      screen: { fullscreen: { status: 'off', request: () => {}, exit: () => {} } },
+      adv: {
+        showFullscreenAdv: (o) => { o?.callbacks?.onOpen?.(); setTimeout(() => o?.callbacks?.onClose?.(true), 50); },
+        showRewardedVideo: (o) => { o?.callbacks?.onOpen?.(); setTimeout(() => { o?.callbacks?.onRewarded?.(); o?.callbacks?.onClose?.(); }, 50); },
+        showBannerAdv: () => Promise.resolve({ stickyAdvIsShowing: false }),
+        hideBannerAdv: () => Promise.resolve(),
+        getBannerAdvStatus: () => Promise.resolve({ stickyAdvIsShowing: false })
+      },
+      auth: { openAuthDialog: () => Promise.resolve() },
+      features: { LoadingAPI: { ready: () => {} }, GameplayAPI: { start: () => {}, stop: () => {} }, GamesAPI: { getAllGames: () => Promise.reject(new Error('not available'))
