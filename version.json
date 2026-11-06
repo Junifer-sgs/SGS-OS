@@ -1,6 +1,6 @@
 {
-  "version": "v1.1.5",
-  "name": "Update Update Update",
-  "details": "The site now tells you when there is a new update and also what the current version.",
-  "updatedAt": "2026-11-01T17:22:20.389Z"
+  "version": "v1.1.6",
+  "name": "Sync, Sounds & Study",
+  "details": "- Added cloud sync: sign in to save and load your data on any device\n- Added Translate\n- Added Dictionary with definitions, synonyms and pronunciation\n- Added Converter for units, temperature and live currency\n- Added Graphing calc with pan, zoom and trace\n- Added Reference: periodic table, formulas and constants\n- Added Markdown notes with folders and search\n- Added Countdown card in the left sidebar\n- Added OS Hub section with a StormOS launcher\n- Added Ctrl+K command palette that opens any tool by name\n- Added shortcut list, opened with ? key\n- Added UI sounds and a keyboard-key sound on hover\n- Added click ripples and smoother tile and button animations\n- Moved Fun to the top\n- Removed the What's new tile (the version button in the corner still opens it)\n- Removed the owner-only setup text from Games\n- Fixed a startup error that could happen with Settings open",
+  "updatedAt": "2026-11-06T05:38:01.755Z"
 }
