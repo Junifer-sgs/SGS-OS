@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-11-11",
+    "title": "CHATTTTTTTTT!!!!!!!!",
+    "text": "uhm i added a chat channel cuz some people requested it\nbig news so i ping all"
+  },
+  {
     "date": "2026-11-09",
     "title": "v1.2.0 - Layouts, Friends & Chat Update",
     "text": "- Added 3 layouts: Terminal, Desktop and Bento\n- Added a Design button for layouts, themes and your own background image\n- Added a theme gallery to share and browse themes\n- Added a startup animation (can be turned off)\n- Added a new login screen: sign up with just a username\n- Added guest access with an access token\n- Added profile pictures, display names and profile cards\n- Added a Who's online list and a combined online counter\n- Added Friends with requests, online status and blocking\n- Added Public chat with report, mute and auto-hide\n- Added an Alerts button for friend requests and announcements\n- Added Polls\n- Added like and dislike ratings on games, plus a Top rated filter\n- Added playtime tracking and a Continue playing row\n- Added your own links on the Desktop and Bento layouts\n- Added a Show desktop button and better window snapping\n- Added a phone layout\n- Added a welcome tour for new users\n- Added auto-save by default and older cloud saves you can restore\n- Added change username and change password\n- Added rules and privacy notice, with a 13+ check at sign-up\n- Added an announcement banner\n- Fixed the announcement banner not clearing"
