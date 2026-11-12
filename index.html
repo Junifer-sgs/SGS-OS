@@ -357,8 +357,14 @@ body.ui-neon button:hover{box-shadow:0 0 12px #f0f}
 
 .win.fs{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;border-radius:0!important;z-index:999999!important;margin:0!important;transform:none!important}
 .win.fs .wb{height:calc(100vh - 32px)!important;max-height:none!important;overflow:auto!important}
-body:has(.win.fs){overflow:hidden!important}
-body:has(.win.fs) #top,body:has(.win.fs) #tb,body:has(.win.fs) aside,body:has(.win.fs) .pill,body:has(.win.fs) #fps{display:none!important}
+/* Only apply fullscreen page chrome changes while a fullscreen app window
+   is actually visible. A hidden/minimized .win.fs must not hide the desktop UI. */
+body:has(.win.fs:not([hidden])){overflow:hidden!important}
+body:has(.win.fs:not([hidden])) #top,
+body:has(.win.fs:not([hidden])) #tb,
+body:has(.win.fs:not([hidden])) aside,
+body:has(.win.fs:not([hidden])) .pill,
+body:has(.win.fs:not([hidden])) #fps{display:none!important}
 .win:fullscreen{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;border-radius:0!important;left:0!important;top:0!important}
 .win:fullscreen .wb{height:calc(100% - 32px)}
 </style>
@@ -705,20 +711,14 @@ function show(k,t,ox,oy){if(k=='themes'){uiPick('theme');return}usageBump('a_'+k
     w.classList.remove('fs');
     if(w._fsPrev){geo(w,w._fsPrev);w._fsPrev=null}
     mx.textContent='[□]';mx.setAttribute('aria-label','Maximize');
-    if(document.fullscreenElement===w)document.exitFullscreen().catch(e=>console.warn('exitFullscreen:',e));
+    // This is an in-app window maximize, not browser fullscreen.
+    // Never call the Fullscreen API here: it hides browser chrome and can
+    // leave the whole app in a broken fullscreen state when the window is minimized.
     return;
   }
   w._fsPrev={x:parseFloat(w.style.left)||0,y:parseFloat(w.style.top)||0,w:w.offsetWidth,h:w.offsetHeight};
   w.classList.add('fs');
   mx.textContent='[⊟]';mx.setAttribute('aria-label','Exit fullscreen');
-  const el=document.documentElement;
-  const req=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
-  if(req){
-    try{
-      const p=req.call(el);
-      if(p&&p.catch)p.catch(e=>console.warn('doc fullscreen failed:',e.name));
-    }catch(e){console.warn('doc fullscreen threw:',e)}
-  }
   saveWins();
 };
  tools[k](b);if(WIDE[k]&&!w.dataset.sz){w.style.width=Math.min(WIDE[k],innerWidth*.96)+'px';w.style.maxWidth='none';w.dataset.sz=1}recTool(k);tbu()}
