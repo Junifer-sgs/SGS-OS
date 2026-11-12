@@ -1086,7 +1086,7 @@ Object.assign(tools,{translate(b){
  $('#trk').onclick=()=>{const x=o.textContent;if(!x||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(x);u.lang=t.value;speechSynthesis.speak(u)};
  $('#trx').onclick=()=>{i.value='';o.textContent='';m.textContent='';i.focus()}}});
 /* ---------- cloud sync (Firebase, free Spark plan, plain web requests) ---------- */
-const FB={key:'AIzaSyBX7czHutqmMLFGPbqcRRH5u76qPeQea-A',pid:'sgs-os-2a89b'},FBDOC='https://firestore.googleapis.com/v1/projects/'+FB.pid+'/databases/(default)/documents/saves/',
+const FB={key:'AIzaSyC7c4e-B729vzn8oHdPO_Y8Mg7JSNEAoYk',pid:'sgs-os-2a89b'},FBDOC='https://firestore.googleapis.com/v1/projects/'+FB.pid+'/databases/(default)/documents/saves/',
 CSKIP=['sgs-cloud','sgs-wins','sgs-gamelist','sgs-fun1','sgs-fx','sgs-rect'],
 cs={get(){const c=store.get('sgs-cloud',null);return c&&typeof c.rt=='string'&&typeof c.uid=='string'?c:null},set(c){store.set('sgs-cloud',c)},clear(){try{localStorage.removeItem('sgs-cloud')}catch{}}},
 chash=t=>{let h=0;for(let i=0;i<t.length;i++)h=(Math.imul(h,31)+t.charCodeAt(i))|0;return h},
