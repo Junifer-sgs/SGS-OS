@@ -1,6 +1,11 @@
 [
   {
     "date": "2026-11-12",
+    "title": "v3.5.0 - big bug fixes",
+    "text": "- Fixed movies\n- Fixed games not loading\n- Cursors\n- Added like 1k more games\n- hella bug fixes"
+  },
+  {
+    "date": "2026-11-12",
     "title": "v3.0.0 - FULL RELEASE",
     "text": "- 18k + games added.\n- 1k + Movies for FREE.\n- Built in Proxy\n- 10k + new themes\n- 10 new UI layout\n- Fixed how Fullscreening works.\n- Make profile pictures (PFPs) appear next to people's messages in chat.\n- Combine consecutive messages from the same person, similar to Discord.\n- Fix Fullscreen functionality.\n- Fix opening the app in `about:blank`.\n- Fix games only displaying a white screen when loading.\n- Make notifications (new updates, banners, friend requests, etc.) stay marked as read after saving and returning later.\n- Make themes and layouts load instantly when a user logs in.\n- Change the minimize symbol from `[_]` to `[-]`.\n- Make the username in the corner display the user's display name instead of their username.\n- Fix Bento's top navigation bar having an oversized scrollbar due to cramped buttons.\n- Fix the desktop layout's search bar autocomplete suggestions to appear above the search bar instead of below it.\n- Improve the appearance of all scrollbars throughout the app."
   },
