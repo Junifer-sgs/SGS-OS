@@ -1,6 +1,6 @@
 {
-  "version": "v4.5.0",
-  "name": "Movies fixed",
-  "details": "ill do a full log later im just lazy rn",
-  "updatedAt": "2026-11-15T18:01:36.477Z"
+  "version": "v4.6.0",
+  "name": "Movie Time",
+  "details": "- 5k+ games added (84k+ games total).\n- New SGS Music tab with more music sources and album searches.\n- New SGS Cinema with built-in proxy settings and a one-click proxy server download.\n- Movies now load through the proxy first, then fall back to the mirror if it fails.\n- Added ad blocking to movies. CineSRC and EmbedWave now play without popups or page takeovers.\n- Updated Cloud Gaming.\n- Fix the \"SGS OS did not finish starting\" screen showing on every load.\n- Fix being stuck in the app while signed out.\n- Fix sign-in so you can log in, upload a profile picture and get the cloud save popup.",
+  "updatedAt": "2026-11-18T13:00:04.333Z"
 }
