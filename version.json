@@ -2,5 +2,5 @@
   "version": "v4.7.0",
   "name": "general stuff plus games",
   "details": "### New Features\n- Added the new Terminal Command Deck layout.\n- Integrated new navigation, search, clock, widgets, and taskbar elements.\n\n### Game Library\n- Removed all Roblox-related games from the catalog.\n- Expanded game-card dimensions for larger artwork.\n- Improved game-card action icon spacing.\n- Continued improvements to game catalog loading and reliability.\n\n### SGS Cinema\n- Improved movie player opening behavior.\n- Added a dedicated video display viewport.\n- Improved player window controls.\n- Worked on popup prevention and proxy integration.\n\n### Accounts & Login\n- Reworked sign-in and account-creation behavior.\n- Improved session verification and persistence.\n- Fixed account panel and username display issues.\n- Improved sign-out handling.\n\n### Removed Features\n- Completely removed the Wallpapers feature.\n- Removed wallpaper selection, generation, and restoration functionality.",
-  "updatedAt": "2026-11-20T01:13:46.676Z"
+  "updatedAt": "2026-11-20T01:13:48.538Z"
 }
