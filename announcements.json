@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-11-21",
+    "title": "Better Chat",
+    "text": "I'm working on adding more chat features, like replies, pings, emojis, editing, etc. uhm if you guys have any other ideas of like what to add just ping me in the features forum and tell me"
+  },
+  {
     "date": "2026-11-20",
     "title": "v4.7.0 - general stuff plus games",
     "text": "### New Features\n- Added the new Terminal Command Deck layout.\n- Integrated new navigation, search, clock, widgets, and taskbar elements.\n\n### Game Library\n- Removed all Roblox-related games from the catalog.\n- Expanded game-card dimensions for larger artwork.\n- Improved game-card action icon spacing.\n- Continued improvements to game catalog loading and reliability.\n\n### SGS Cinema\n- Improved movie player opening behavior.\n- Added a dedicated video display viewport.\n- Improved player window controls.\n- Worked on popup prevention and proxy integration.\n\n### Accounts & Login\n- Reworked sign-in and account-creation behavior.\n- Improved session verification and persistence.\n- Fixed account panel and username display issues.\n- Improved sign-out handling.\n\n### Removed Features\n- Completely removed the Wallpapers feature.\n- Removed wallpaper selection, generation, and restoration functionality."
